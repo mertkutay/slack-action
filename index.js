@@ -8,11 +8,12 @@ async function run() {
     const status = core.getInput('status', { required: true });
     const channel = core.getInput('channel', { required: false });
     const { workflow, payload } = context;
-    const { repository, sender, compare } = payload;
+    const { repository, sender } = payload;
     const commit = payload.head_commit;
     const branch = context.ref.replace('refs/heads/', '');
     const repositoryName = repository.full_name;
     const repositoryUrl = repository.html_url;
+    const branchUrl = `${repositoryUrl}/tree/${branch}`;
 
     let text = '';
     let color;
@@ -41,7 +42,7 @@ async function run() {
     const fields = [
       {
         title: 'Branch',
-        value: `<${compare}|${branch}>`,
+        value: `<${branchUrl}|${branch}>`,
         short: false,
       },
       {
