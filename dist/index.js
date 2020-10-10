@@ -22,40 +22,42 @@ async function run() {
     const status = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('status', { required: true });
     const channel = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('channel', { required: false });
     const { workflow, payload } = _actions_github__WEBPACK_IMPORTED_MODULE_0__.context;
-    const { repository, sender, compare } = payload;
+    const { repository, sender } = payload;
     const commit = payload.head_commit;
     const branch = _actions_github__WEBPACK_IMPORTED_MODULE_0__.context.ref.replace('refs/heads/', '');
     const repositoryName = repository.full_name;
     const repositoryUrl = repository.html_url;
+    const branchUrl = `${repositoryUrl}/tree/${branch}`;
 
     let text = '';
     let color;
     switch (status.toLowerCase()) {
       case 'started':
-        text = `:information_source: Started: ${workflow}`;
+        text = ':information_source: Started:';
         break;
       case 'success':
         color = 'good';
-        text = `:white_check_mark: Success: ${workflow}`;
+        text = ':heavy_check_mark: Success:';
         break;
       case 'failure':
         color = 'danger';
-        text = `:no_entry: Failure: ${workflow}`;
+        text = ':no_entry: Failure:';
         break;
       case 'cancelled':
         color = 'warning';
-        text = `:warning: Cancelled: ${workflow}`;
+        text = ':warning: Cancelled:';
         break;
       default:
         throw new Error(
           'Valid statuses are: started, success, failure, cancelled',
         );
     }
+    text += ` <${commit.url}/checks|${workflow}>`;
 
     const fields = [
       {
         title: 'Branch',
-        value: `<${compare}|${branch}>`,
+        value: `<${branchUrl}|${branch}>`,
         short: false,
       },
       {
