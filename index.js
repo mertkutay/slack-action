@@ -1,46 +1,51 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
-import { IncomingWebhook, IncomingWebhookResult } from "@slack/webhook";
+import { context } from '@actions/github';
+import * as core from '@actions/core';
+import { IncomingWebhook } from '@slack/webhook';
 
 async function run() {
   try {
-    const webhook_url = process.env.SLACK_WEBHOOK_URL;
-    const status = core.getInput("status", { required: true });
-    const channel = core.getInput("channel", { required: false });
-    const workflow = context.workflow;
-    const repository = context.payload.repository;
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    const status = core.getInput('status', { required: true });
+    const channel = core.getInput('channel', { required: false });
+    const { workflow, payload } = context;
+    const { repository, sender, compare } = payload;
+    const commit = payload.head_commit;
+    const branch = context.ref.replace('refs/heads/', '');
     const repositoryName = repository.full_name;
     const repositoryUrl = repository.html_url;
-    const sender = context.payload.sender;
 
-    let text = "";
+    let text = '';
     let color;
     switch (status.toLowerCase()) {
-      case "started":
+      case 'started':
         text = `:information_source: Started: ${workflow}`;
-      case "success":
-        color = "good";
+        break;
+      case 'success':
+        color = 'good';
         text = `:white_check_mark: Success: ${workflow}`;
-      case "failure":
-        color = "danger";
+        break;
+      case 'failure':
+        color = 'danger';
         text = `:no_entry: Failure: ${workflow}`;
-      case "cancelled":
-        color = "warning";
+        break;
+      case 'cancelled':
+        color = 'warning';
         text = `:warning: Cancelled: ${workflow}`;
+        break;
+      default:
+        throw new Error(
+          'Valid statuses are: started, success, failure, cancelled',
+        );
     }
-
-    const commit = context.payload.head_commit;
-    const compare = context.payload.compare;
-    const branch = context.ref.replace("refs/heads/", "");
 
     const fields = [
       {
-        title: "Branch",
+        title: 'Branch',
         value: `<${compare}|${branch}>`,
         short: false,
       },
       {
-        title: "Commit",
+        title: 'Commit',
         value: `<${commit.url}|${commit.message}>`,
         short: false,
       },
@@ -54,20 +59,20 @@ async function run() {
       attachments: [
         {
           fallback: `New Commit on ${repositoryName}/${branch} by ${sender.login}`,
-          color: color,
+          color,
           author_name: sender.login,
           author_link: sender.html_url,
           author_icon: sender.avatar_url,
           fields,
           footer: `<${repositoryUrl}|${repositoryName}>`,
-          footer_icon: "https://github.githubassets.com/favicon.ico",
+          footer_icon: 'https://github.githubassets.com/favicon.ico',
           ts: ts.getTime().toString(),
         },
       ],
     };
 
-    const webhook = new IncomingWebhook(webhook_url);
-    return await webhook.send(message);
+    const webhook = new IncomingWebhook(webhookUrl);
+    await webhook.send(message);
   } catch (error) {
     core.setFailed(error.message);
   }
