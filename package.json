@@ -9,12 +9,23 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "lint-staged": {
+    "*.js": "eslint"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
     "@slack/webhook": "^5.0.3"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.24.1"
+    "@vercel/ncc": "^0.24.1",
+    "eslint": "^7.11.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0"
   }
 }
