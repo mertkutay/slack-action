@@ -19,25 +19,26 @@ async function run() {
     let color;
     switch (status.toLowerCase()) {
       case 'started':
-        text = `:information_source: Started: ${workflow}`;
+        text = ':information_source: Started:';
         break;
       case 'success':
         color = 'good';
-        text = `:white_check_mark: Success: ${workflow}`;
+        text = ':heavy_check_mark: Success:';
         break;
       case 'failure':
         color = 'danger';
-        text = `:no_entry: Failure: ${workflow}`;
+        text = ':no_entry: Failure:';
         break;
       case 'cancelled':
         color = 'warning';
-        text = `:warning: Cancelled: ${workflow}`;
+        text = ':warning: Cancelled:';
         break;
       default:
         throw new Error(
           'Valid statuses are: started, success, failure, cancelled',
         );
     }
+    text += ` <${commit.url}/checks|${workflow}>`;
 
     const fields = [
       {
