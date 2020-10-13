@@ -21,6 +21,7 @@ async function run() {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
     const status = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('status', { required: true });
     const channel = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('channel', { required: false });
+    let text = _actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput('text', { required: false });
     const { workflow, payload } = _actions_github__WEBPACK_IMPORTED_MODULE_0__.context;
     const { repository, sender } = payload;
     const commit = payload.head_commit;
@@ -29,30 +30,33 @@ async function run() {
     const repositoryUrl = repository.html_url;
     const branchUrl = `${repositoryUrl}/tree/${branch}`;
 
-    let text = '';
     let color;
-    switch (status.toLowerCase()) {
-      case 'started':
-        text = ':information_source: Started:';
-        break;
+    let emoji;
+    switch (status) {
       case 'success':
         color = 'good';
-        text = ':heavy_check_mark: Success:';
+        emoji = ':heavy_check_mark:';
         break;
       case 'failure':
         color = 'danger';
-        text = ':no_entry: Failure:';
+        emoji = ':no_entry:';
         break;
       case 'cancelled':
         color = 'warning';
-        text = ':warning: Cancelled:';
+        emoji = ':warning:';
+        break;
+      case 'info':
+        emoji = ':information_source:';
         break;
       default:
         throw new Error(
-          'Valid statuses are: started, success, failure, cancelled',
+          'Valid statuses are: info, success, failure, cancelled',
         );
     }
-    text += ` <${commit.url}/checks|${workflow}>`;
+    if (!text) {
+      text = status[0].toUpperCase() + status.slice(1);
+    }
+    text = `${emoji} ${text}: <${commit.url}/checks|${workflow}>`;
 
     const fields = [
       {

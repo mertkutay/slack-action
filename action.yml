@@ -7,6 +7,9 @@ inputs:
   channel:
     description: 'The name of the slack channel'
     required: false
+  text:
+    description: 'The text that will be sent besides workflow name'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -6,11 +6,15 @@ This action sends a notification message to slack that can be used for push even
 
 ### `status`
 
-**Required** The status of the job. Valid values are: `started`, `success`, `failure`, `cancelled`.
+**Required** The status of the job. Valid values are: `info`, `success`, `failure`, `cancelled`.
 
 ### `channel`
 
 **Optional** The name of the slack channel.
+
+### `text`
+
+**Optional** The text that will be sent besides workflow name. Defaults to title case status.
 
 ## Example usage
 
