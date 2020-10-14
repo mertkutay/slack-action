@@ -43,6 +43,7 @@ async function run() {
       text = status[0].toUpperCase() + status.slice(1);
     }
     text = `${emoji} ${text}: <${commit.url}/checks|${workflow}>`;
+    const commitMessage = commit.message.split('\n')[0];
 
     const fields = [
       {
@@ -52,7 +53,7 @@ async function run() {
       },
       {
         title: 'Commit',
-        value: `<${commit.url}|${commit.message}>`,
+        value: `<${commit.url}|${commitMessage}>`,
         short: false,
       },
     ];
